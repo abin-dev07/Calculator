@@ -10,14 +10,15 @@
 .container{
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-direction: column;
     width: 400px;
-    height: 450px;
+    height: 400px;
     background-color:rgb(202, 201, 201)
 }
 .display{
     width: 400px;
-    background-color: rgb(32, 37, 29);
+    background-color: rgb(68, 85, 57);
     height: 100px;
 }
 .keyWrapper{
@@ -34,4 +35,13 @@
     padding: 3px;
     width: 6.8em;
     height: 4em;
+}
+.results{
+    color: white;
+    font-size: 40px;
+    font-weight: 800;
+    margin-top: 20px;;
+    display: flex;
+    justify-content: flex-end;
+    
 }
