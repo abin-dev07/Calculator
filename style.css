@@ -1,0 +1,37 @@
+
+
+.containerWrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+}
+.container{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 400px;
+    height: 450px;
+    background-color:rgb(202, 201, 201)
+}
+.display{
+    width: 400px;
+    background-color: rgb(32, 37, 29);
+    height: 100px;
+}
+.keyWrapper{
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    flex-wrap: wrap;
+    background-color: bisque;
+    
+    width: 390px;
+    padding: 5px;
+}
+.key{
+    padding: 3px;
+    width: 6.8em;
+    height: 4em;
+}
