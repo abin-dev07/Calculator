@@ -1,296 +1,100 @@
 let displayValue = '0';
 let firstOperand = null;
 let secondOperand = null;
-let firstOperator = null;
-let secondOperator = null;
+let operator = null;
 let result = null;
-
 const inputValue = document.getElementById("user-input");
-function updateDisplay(){
-    inputValue.innerText=displayValue;
-    // inputValue.innerHTML.trim()
+
+function updateDisplay() {
+    inputValue.innerText = displayValue;
 }
 updateDisplay();
-// EventListenrs for Number Buttons and append to Display
-function clickHandler(){
-    const number = document.querySelectorAll("button").forEach(function (item) {
-        item.addEventListener("click", function (e) {
-            if (item.classList.contains("numbers")) {
-                operandHandler(item.innerText);
-                updateDisplay()
+document.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", () => {
+        if (button.classList.contains("numbers")) {
+            handleOperand(button.innerText);
+        } else if (button.classList.contains("key-operate")) {
+            handleOperator(button.innerText);
+        } else if (button.classList.contains("key-equal")) {
+            handleEquals();
+        } else if (button.classList.contains("decimal")) {
+            handleDecimal(button.innerText);
+        } else if (button.classList.contains("key-percent")) {
+            handlePercent();
+        } else if (button.innerHTML === "AC") {
+            clearDisplay();
         }
-        else if(item.classList.contains("key-operate")){
-                operatorHandler(item.innerText)
+        else if (button.innerHTML === "DEL") {
+            inputBackspace()
+            updateDisplay()
         }
-        else if(item.classList.contains("key-equal")){
-                inputEquals();
-                updateDisplay();
-        }
-        else if(item.classList.contains("decimal")){
-            inputDecimal(item.innerText)
-            updateDisplay();
-        }
-        else if(item.classList.contains("key-equal")){
-            inputPercent(displayValue);
-            updateDisplay();
-        }
-        else if(item.innerHTML=="AC"){
-            clearDisplay()
-            updateDisplay();
-        }
-        
-      });
+        updateDisplay();
     });
-}
-clickHandler()
-
-
-function operandHandler(operand){
-    if(firstOperator === null){
-        if(inputValue.innerText==='0' || inputValue.innerText===0){
-            displayValue=operand;
-            console.log(displayValue)
-        }
-        else if(displayValue === firstOperand){
-            displayValue=operand;
-        }
-        else{
-            displayValue+=operand;
-        }
-    }else {
-        if(displayValue === firstOperand) {
+});
+function handleOperand(operand) {
+    if (operator === null) {
+        displayValue = (displayValue === '0') ? operand : displayValue + operand;
+    } else {
+        if (displayValue === firstOperand) {
             displayValue = operand;
         } else {
             displayValue += operand;
         }
     }
-
 }
-
-function operatorHandler(operator){
-    if(firstOperator != null && secondOperator === null) {
-        //4th click - handles input of second operator
-        secondOperator = operator;
+function handleOperator(op) {
+    if (operator === null) {
+        firstOperand = displayValue;
+        operator = op;
+    } else {
         secondOperand = displayValue;
-        result = operate(Number(firstOperand), Number(secondOperand), firstOperator);
+        result = operate(Number(firstOperand), Number(secondOperand), operator);
         displayValue = roundAccurately(result, 15).toString();
         firstOperand = displayValue;
-        result = null;
-    } else if(firstOperator != null && secondOperator != null) {
-        //6th click - new secondOperator
+        operator = op;
+    }
+}
+function handleEquals() {
+    if (operator !== null) {
         secondOperand = displayValue;
-        result = operate(Number(firstOperand), Number(secondOperand), secondOperator);
-        secondOperator = operator;
-        displayValue = roundAccurately(result, 15).toString();
+        result = operate(Number(firstOperand), Number(secondOperand), operator);
+        displayValue = (result === 'lmao') ? 'lmao' : roundAccurately(result, 15).toString();
         firstOperand = displayValue;
-        result = null;
-    } else { 
-        //2nd click - handles first operator input
-        firstOperator = operator;
-        firstOperand = displayValue;
+        operator = null;
     }
 }
-
-function inputEquals() {
-    //hitting equals doesn't display undefined before operate()
-    if(firstOperator === null) {
-        displayValue = displayValue;
-    } else if(secondOperator != null) {
-        //handles final result
-        secondOperand = displayValue;
-        result = operate(Number(firstOperand), Number(secondOperand), secondOperator);
-        if(result === 'lmao') {
-            displayValue = 'lmao';
-        } else {
-            displayValue = roundAccurately(result, 15).toString();
-            firstOperand = displayValue;
-            secondOperand = null;
-            firstOperator = null;
-            secondOperator = null;
-            result = null;
-        }
-    } else {
-        //handles first operation
-        secondOperand = displayValue;
-        result = operate(Number(firstOperand), Number(secondOperand), firstOperator);
-        if(result === 'lmao') {
-            displayValue = 'lmao';
-        } else {
-            displayValue = roundAccurately(result, 15).toString();
-            firstOperand = displayValue;
-            secondOperand = null;
-            firstOperator = null;
-            secondOperator = null;
-            result = null;
-        }
-    }
-}
-
-
-function inputEquals() {
-    //hitting equals doesn't display undefined before operate()
-    if(firstOperator === null) {
-        displayValue = displayValue;
-    } else if(secondOperator != null) {
-        //handles final result
-        secondOperand = displayValue;
-        result = operate(Number(firstOperand), Number(secondOperand), secondOperator);
-        if(result === 'lmao') {
-            displayValue = 'lmao';
-        } else {
-            displayValue = roundAccurately(result, 15).toString();
-            firstOperand = displayValue;
-            secondOperand = null;
-            firstOperator = null;
-            secondOperator = null;
-            result = null;
-        }
-    } else {
-        //handles first operation
-        secondOperand = displayValue;
-        result = operate(Number(firstOperand), Number(secondOperand), firstOperator);
-        if(result === 'lmao') {
-            displayValue = 'lmao';
-        } else {
-            displayValue = roundAccurately(result, 15).toString();
-            firstOperand = displayValue;
-            secondOperand = null;
-            firstOperator = null;
-            secondOperator = null;
-            result = null;
-        }
-    }
-}
-
-function inputDecimal(dot) {
-    if(displayValue === firstOperand || displayValue === secondOperand) {
-        displayValue = '0';
+function handleDecimal(dot) {
+    if (!displayValue.includes(dot)) {
         displayValue += dot;
-    } else if(!displayValue.includes(dot)) {
-        displayValue += dot;
-    } 
+    }
 }
-
-function inputPercent(num) {
-    displayValue = (num/100).toString();
+function handlePercent() {
+    displayValue = (parseFloat(displayValue) / 100).toString();
 }
-
-function inputSign(num) {
-    displayValue = (num * -1).toString();
-}
-
 function clearDisplay() {
     displayValue = '0';
     firstOperand = null;
-    secondOperand = null;
-    firstOperator = null;
-    secondOperator = null;
+    operator = null;
     result = null;
 }
 
 function inputBackspace() {
-    if(firstOperand != null) {
-        firstOperand = null;
-        updateDisplay();
+    displayValue = inputValue.innerText.substring(0, inputValue.innerText.length - 1);
+    console.log("The click",inputValue.innerText.length)
+    if (inputValue.innerText.length ==1 ) {
+        displayValue = 0;
     }
 }
 
 function operate(x, y, op) {
-    if(op === '+') {
-        return x + y;
-    } else if(op === '-') {
-        return x - y;
-    } else if(op === '*') {
-        return x * y;
-    } else if(op === '/') {
-        if(y === 0) {
-            return 'lmao';
-        } else {
-        return x / y;
-        }
+    switch (op) {
+        case '+': return x + y;
+        case '-': return x - y;
+        case '*': return x * y;
+        case '/': return y === 0 ? 'lmao' : x / y;
+        default: return null;
     }
 }
-
 function roundAccurately(num, places) {
     return parseFloat(Math.round(num + 'e' + places) + 'e-' + places);
 }
-// const regex = /([-+\d.]+)([+\-*/%])([-+\d.]+)/g;
-// const percentageRegex = /([-+\d.]+)(%?)/g;
-// let match;
-// const calculate = document.querySelectorAll(".operations")
-//     .forEach(function (item) {
-//   item.addEventListener("click", function (e) {
-//             let lastValue = inputValue.innerText.substring(inputValue.innerText.length, inputValue.innerText.length - 1);
-
-//             if (!isNaN(lastValue) && e.target.innerHTML === "=") {
-//                 try {
-//                     const result = evaluateExpression(inputValue.innerText);
-//                     inputValue.innerText = result;
-//                 } catch (error) {
-//                     console.log("Error:", error.message);
-//                 }
-//             } //% usecase
-//             else if (isNaN(lastValue) && e.target.innerHTML === "=") {
-//                 // considering only % 
-//                 match = percentageRegex.exec(inputValue.innerText)
-//                 inputValue.innerText = ((parseFloat(match[1])) / 100)
-//                 console.log(inputValue.innerText)
-//             }
-//             else if (e.target.innerHTML === "AC") {
-//                 inputValue.innerText = 0;
-//             } else if (e.target.innerHTML === "DEL") {
-//                 inputValue.innerText = inputValue.innerText.substring(0, inputValue.innerText.length - 1);
-//                 if (inputValue.innerText.length == 0) {
-//                     inputValue.innerText = 0;
-//                 }
-//             } else {
-//                 if (!isNaN(lastValue)) {
-//                     inputValue.innerText += e.target.innerHTML;
-//                 }
-//             }
-//         });
-
-//     });
-
-// function evaluateExpression(expression) {
-//     let result = 0;
-//     let currentNumber = '';
-//     let currentOperator = '+';
-
-//     for (let i = 0; i < expression.length; i++) {
-//         const char = expression[i];
-
-//         if (/\d|\./.test(char)) {
-//             currentNumber += char;
-//         } else if (/[+\-*/%]/.test(char)) {
-//             if (currentNumber) {
-//                 result = applyOperation(result, parseFloat(currentNumber), currentOperator);
-//                 currentNumber = '';
-//             }
-//             currentOperator = char;
-//         }
-//     }
-
-//     if (currentNumber) {
-//         result = applyOperation(result, parseFloat(currentNumber), currentOperator);
-//     }
-
-//     return result;
-// }
-
-// function applyOperation(accumulator, number, operator) {
-//   switch (operator) {
-//     case '+':
-//             return accumulator + number;
-//     case '-':
-//             return accumulator - number;
-//     case '*':
-//             return accumulator * number;
-//     case '/':
-//             return accumulator / number;
-//     case '%':
-//             return accumulator * (number / 100);
-//     default:
-//             console.log("Unsupported operator: " + operator);
-//   }
-// }
